@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Mic, FileSpreadsheet, Database, RefreshCw } from "lucide-react";
+import { Mic, FileSpreadsheet, Database, RefreshCw, Save } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ReadingRecord, determineGrade } from "@/types";
 import { getReadingRecords, saveReadingRecord, clearReadingRecords } from "@/utils/storage";
@@ -112,24 +112,40 @@ const ReadingAssessment: React.FC = () => {
     
     // Set the result
     setResult({ wpm, grade });
-    
-    // Save the record
+  };
+
+  // Handle saving the record
+  const handleSaveRecord = () => {
+    if (!result) {
+      toast({
+        title: "Error",
+        description: "No hay resultados para guardar. Realiza una lectura primero.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create new record
     const now = new Date();
     const record: ReadingRecord = {
       id: Date.now().toString(),
       date: now.toLocaleDateString(),
       time: now.toLocaleTimeString(),
-      text,
-      wpm,
-      grade,
+      text: transcription,
+      wpm: result.wpm,
+      grade: result.grade,
     };
     
+    // Save the record
     saveReadingRecord(record);
-    setRecords([...records, record]);
+    
+    // Update local state
+    const updatedRecords = getReadingRecords();
+    setRecords(updatedRecords);
     
     toast({
-      title: "Lectura Completada",
-      description: `Velocidad de lectura: ${wpm} PPM`,
+      title: "Registro Guardado",
+      description: `Se ha guardado el registro de lectura con ${result.wpm} PPM.`,
     });
   };
 
@@ -256,6 +272,20 @@ const ReadingAssessment: React.FC = () => {
                   <p className="text-2xl font-bold">{result.wpm} PPM</p>
                 </div>
               </div>
+            </div>
+          )}
+          
+          {/* Save Button */}
+          {result && (
+            <div className="flex justify-center mt-4">
+              <Button 
+                variant="default" 
+                className="gap-2" 
+                onClick={handleSaveRecord}
+              >
+                <Save className="h-5 w-5" />
+                Guardar Registro
+              </Button>
             </div>
           )}
           
