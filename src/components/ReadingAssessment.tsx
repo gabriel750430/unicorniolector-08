@@ -3,6 +3,15 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -14,9 +23,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Mic, FileSpreadsheet, Database, RefreshCw, Save } from "lucide-react";
+import { Mic, FileSpreadsheet, Database, RefreshCw, Save, GraduationCap, User } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { ReadingRecord, determineGrade } from "@/types";
+import { ReadingRecord, determineGrade, schoolGrades, evaluatePerformance } from "@/types";
 import { getReadingRecords, saveReadingRecord, clearReadingRecords } from "@/utils/storage";
 import { exportToExcel } from "@/utils/excelExport";
 import speechRecognition from "@/utils/speechRecognition";
@@ -25,9 +34,11 @@ const ReadingAssessment: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [transcription, setTranscription] = useState("");
   const [records, setRecords] = useState<ReadingRecord[]>([]);
-  const [result, setResult] = useState<{ wpm: number; grade: string } | null>(null);
+  const [result, setResult] = useState<{ wpm: number; grade: string; performance: string } | null>(null);
   const [timeLeft, setTimeLeft] = useState(60); // 60 seconds = 1 minute
   const [timerActive, setTimerActive] = useState(false);
+  const [studentName, setStudentName] = useState("");
+  const [schoolGrade, setSchoolGrade] = useState("");
   const { toast } = useToast();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -58,6 +69,25 @@ const ReadingAssessment: React.FC = () => {
 
   // Handle starting the recording
   const handleStartRecording = () => {
+    // Validate inputs
+    if (!studentName.trim()) {
+      toast({
+        title: "Nombre Requerido",
+        description: "Por favor, ingresa el nombre del estudiante.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!schoolGrade) {
+      toast({
+        title: "Grado Escolar Requerido",
+        description: "Por favor, selecciona el grado escolar del estudiante.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Clear previous results
     setResult(null);
     
@@ -109,9 +139,10 @@ const ReadingAssessment: React.FC = () => {
     // Calculate words per minute
     const wpm = speechRecognition.calculateWPM(text, elapsedTime);
     const grade = determineGrade(wpm);
+    const performance = evaluatePerformance(wpm, schoolGrade);
     
     // Set the result
-    setResult({ wpm, grade });
+    setResult({ wpm, grade, performance });
   };
 
   // Handle saving the record
@@ -134,6 +165,9 @@ const ReadingAssessment: React.FC = () => {
       text: transcription,
       wpm: result.wpm,
       grade: result.grade,
+      studentName: studentName,
+      schoolGrade: schoolGrade,
+      performance: result.performance
     };
     
     // Save the record
@@ -145,7 +179,7 @@ const ReadingAssessment: React.FC = () => {
     
     toast({
       title: "Registro Guardado",
-      description: `Se ha guardado el registro de lectura con ${result.wpm} PPM.`,
+      description: `Se ha guardado el registro de lectura de ${studentName} con ${result.wpm} PPM.`,
     });
   };
 
@@ -196,6 +230,46 @@ const ReadingAssessment: React.FC = () => {
           <p className="text-center text-muted-foreground">
             Herramienta de evaluación de lectura para estudiantes de primaria
           </p>
+          
+          {/* Student Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="student-name">Nombre del Alumno</Label>
+              <div className="flex items-center space-x-2">
+                <User className="h-5 w-5 text-muted-foreground" />
+                <Input 
+                  id="student-name" 
+                  placeholder="Ingresa el nombre completo" 
+                  value={studentName}
+                  onChange={(e) => setStudentName(e.target.value)}
+                  disabled={isRecording}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="school-grade">Grado Escolar</Label>
+              <div className="flex items-center space-x-2">
+                <GraduationCap className="h-5 w-5 text-muted-foreground" />
+                <Select 
+                  value={schoolGrade} 
+                  onValueChange={setSchoolGrade}
+                  disabled={isRecording}
+                >
+                  <SelectTrigger id="school-grade" className="w-full">
+                    <SelectValue placeholder="Selecciona el grado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {schoolGrades.map((grade) => (
+                      <SelectItem key={grade} value={grade}>
+                        {grade}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
           
           {/* Timer Display */}
           {(isRecording || timeLeft < 60) && (
@@ -270,6 +344,10 @@ const ReadingAssessment: React.FC = () => {
                 <div>
                   <p className="text-sm font-medium">Velocidad de lectura:</p>
                   <p className="text-2xl font-bold">{result.wpm} PPM</p>
+                </div>
+                <div className="mt-2 sm:mt-0">
+                  <p className="text-sm font-medium">Desempeño:</p>
+                  <p className="text-md font-semibold">{result.performance}</p>
                 </div>
               </div>
             </div>
