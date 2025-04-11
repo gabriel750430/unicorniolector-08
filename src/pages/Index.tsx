@@ -9,6 +9,7 @@ import { ReadingRecord } from "@/types";
 const Index = () => {
   const [records, setRecords] = useState<ReadingRecord[]>([]);
   const [currentWpm, setCurrentWpm] = useState<number | null>(null);
+  const [showGradeChart, setShowGradeChart] = useState<boolean>(false);
 
   // Load records on component mount
   useEffect(() => {
@@ -24,7 +25,7 @@ const Index = () => {
   return (
     <div className="container py-8 px-4 md:px-8 mx-auto">
       <ReadingAssessment />
-      <GradeChart currentWpm={currentWpm} />
+      <GradeChart currentWpm={currentWpm} visible={showGradeChart} />
       <ReadingRecords records={records} />
       
       <footer className="mt-12 text-center text-sm text-muted-foreground">

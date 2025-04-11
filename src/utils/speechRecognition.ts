@@ -28,6 +28,7 @@ class SpeechRecognitionService {
   private startTime: number = 0;
   private text: string = '';
   private onTextUpdateCallback: ((text: string) => void) | null = null;
+  private finalTranscripts: string[] = [];
 
   constructor() {
     // Initialize SpeechRecognition
@@ -59,6 +60,7 @@ class SpeechRecognitionService {
       this.isListening = true;
       this.startTime = Date.now();
       this.text = '';
+      this.finalTranscripts = [];
       this.onTextUpdateCallback = onTextUpdate;
       this.recognition.start();
       return true;
@@ -74,7 +76,10 @@ class SpeechRecognitionService {
       this.isListening = false;
       this.recognition.stop();
       const elapsedTime = (Date.now() - this.startTime) / 1000; // time in seconds
-      return { text: this.text, elapsedTime };
+      
+      // Combine all final transcripts to get the complete text
+      const finalText = this.finalTranscripts.join(' ').trim();
+      return { text: finalText || this.text, elapsedTime };
     }
     return { text: this.text, elapsedTime: 0 };
   }
@@ -83,9 +88,13 @@ class SpeechRecognitionService {
   public calculateWPM(text: string, elapsedTimeInSeconds: number): number {
     if (!text || elapsedTimeInSeconds <= 0) return 0;
     
-    const wordCount = text.trim().split(/\s+/).length;
+    // Count words by splitting on whitespace and filtering out empty strings
+    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+    const wordCount = words.length;
     const minutes = elapsedTimeInSeconds / 60;
-    return Math.round(wordCount / minutes);
+    
+    // Return rounded WPM, ensure it's at least 1 if there are words
+    return wordCount > 0 ? Math.max(1, Math.round(wordCount / minutes)) : 0;
   }
 
   // Handle speech recognition results
@@ -98,13 +107,16 @@ class SpeechRecognitionService {
       
       if (event.results[i].isFinal) {
         finalTranscript += transcript + ' ';
+        this.finalTranscripts.push(transcript.trim());
       } else {
         interimTranscript += transcript;
       }
     }
 
-    // Update the full text
-    this.text = (this.text + finalTranscript).trim();
+    // Update the full text for display
+    if (finalTranscript) {
+      this.text = this.finalTranscripts.join(' ').trim();
+    }
     
     // Call the callback with the current text plus any interim results
     if (this.onTextUpdateCallback) {

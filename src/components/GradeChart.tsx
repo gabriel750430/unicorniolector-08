@@ -5,9 +5,12 @@ import { gradeRanges } from "@/types";
 
 interface GradeChartProps {
   currentWpm: number | null;
+  visible?: boolean;
 }
 
-const GradeChart: React.FC<GradeChartProps> = ({ currentWpm }) => {
+const GradeChart: React.FC<GradeChartProps> = ({ currentWpm, visible = false }) => {
+  if (!visible) return null;
+  
   return (
     <Card className="w-full max-w-3xl p-6 mt-6 shadow-lg">
       <h2 className="text-xl font-bold mb-4">Niveles de Velocidad de Lectura</h2>
