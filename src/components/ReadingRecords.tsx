@@ -37,8 +37,7 @@ const ReadingRecords: React.FC<ReadingRecordsProps> = ({ records }) => {
             <TableRow>
               <TableHead>Fecha</TableHead>
               <TableHead>Hora</TableHead>
-              <TableHead>WPM</TableHead>
-              <TableHead>Grado</TableHead>
+              <TableHead>PPM</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -47,7 +46,6 @@ const ReadingRecords: React.FC<ReadingRecordsProps> = ({ records }) => {
                 <TableCell>{record.date}</TableCell>
                 <TableCell>{record.time}</TableCell>
                 <TableCell>{record.wpm}</TableCell>
-                <TableCell>{record.grade}</TableCell>
               </TableRow>
             ))}
           </TableBody>

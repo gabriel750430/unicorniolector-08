@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -25,8 +26,11 @@ const ReadingAssessment: React.FC = () => {
   const [transcription, setTranscription] = useState("");
   const [records, setRecords] = useState<ReadingRecord[]>([]);
   const [result, setResult] = useState<{ wpm: number; grade: string } | null>(null);
+  const [timeLeft, setTimeLeft] = useState(60); // 60 seconds = 1 minute
+  const [timerActive, setTimerActive] = useState(false);
   const { toast } = useToast();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load records on component mount
   useEffect(() => {
@@ -34,16 +38,37 @@ const ReadingAssessment: React.FC = () => {
     setRecords(storedRecords);
   }, []);
 
+  // Handle timer countdown
+  useEffect(() => {
+    if (timerActive && timeLeft > 0) {
+      timerRef.current = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+    } else if (timerActive && timeLeft === 0) {
+      // Time's up, stop recording
+      handleStopRecording();
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [timerActive, timeLeft]);
+
   // Handle starting the recording
   const handleStartRecording = () => {
     // Clear previous results
     setResult(null);
     
+    // Reset timer
+    setTimeLeft(60);
+    
     // Check if speech recognition is supported
     if (!speechRecognition.isSupported()) {
       toast({
-        title: "Not Supported",
-        description: "Speech recognition is not supported in this browser.",
+        title: "No Compatible",
+        description: "El reconocimiento de voz no es compatible con este navegador.",
         variant: "destructive",
       });
       return;
@@ -56,15 +81,16 @@ const ReadingAssessment: React.FC = () => {
 
     if (success) {
       setIsRecording(true);
+      setTimerActive(true);
       setTranscription("");
       toast({
-        title: "Recording Started",
-        description: "The microphone is now active. Start reading.",
+        title: "Grabación Iniciada",
+        description: "El micrófono está activo. Comienza la lectura.",
       });
     } else {
       toast({
         title: "Error",
-        description: "Failed to start recording. Please try again.",
+        description: "No se pudo iniciar la grabación. Por favor, inténtalo de nuevo.",
         variant: "destructive",
       });
     }
@@ -74,6 +100,9 @@ const ReadingAssessment: React.FC = () => {
   const handleStopRecording = () => {
     if (!isRecording) return;
 
+    // Stop the timer
+    setTimerActive(false);
+    
     const { text, elapsedTime } = speechRecognition.stop();
     setIsRecording(false);
     
@@ -99,8 +128,8 @@ const ReadingAssessment: React.FC = () => {
     setRecords([...records, record]);
     
     toast({
-      title: "Reading Completed",
-      description: `Reading speed: ${wpm} WPM (${grade})`,
+      title: "Lectura Completada",
+      description: `Velocidad de lectura: ${wpm} PPM`,
     });
   };
 
@@ -108,14 +137,16 @@ const ReadingAssessment: React.FC = () => {
   const handleRestartReading = () => {
     setTranscription("");
     setResult(null);
+    setTimeLeft(60);
+    setTimerActive(false);
   };
 
   // Handle exporting to Excel
   const handleExportToExcel = () => {
     if (records.length === 0) {
       toast({
-        title: "No Records",
-        description: "There are no reading records to export.",
+        title: "Sin Registros",
+        description: "No hay registros de lectura para exportar.",
         variant: "destructive",
       });
       return;
@@ -123,8 +154,8 @@ const ReadingAssessment: React.FC = () => {
     
     exportToExcel(records);
     toast({
-      title: "Export Successful",
-      description: "Reading records exported to Excel file.",
+      title: "Exportación Exitosa",
+      description: "Registros de lectura exportados a archivo Excel.",
     });
   };
 
@@ -133,10 +164,13 @@ const ReadingAssessment: React.FC = () => {
     clearReadingRecords();
     setRecords([]);
     toast({
-      title: "Database Reset",
-      description: "All reading records have been deleted.",
+      title: "Base de Datos Reiniciada",
+      description: "Todos los registros de lectura han sido eliminados.",
     });
   };
+
+  // Calculate progress percentage for the timer
+  const progressPercentage = (timeLeft / 60) * 100;
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
@@ -146,6 +180,16 @@ const ReadingAssessment: React.FC = () => {
           <p className="text-center text-muted-foreground">
             Herramienta de evaluación de lectura para estudiantes de primaria
           </p>
+          
+          {/* Timer Display */}
+          {(isRecording || timeLeft < 60) && (
+            <div className="mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium">Tiempo restante: {timeLeft} segundos</span>
+              </div>
+              <Progress value={progressPercentage} className="h-2" />
+            </div>
+          )}
           
           {/* Recording Controls */}
           <div className="flex flex-col sm:flex-row justify-center gap-4 mt-6">
@@ -209,11 +253,7 @@ const ReadingAssessment: React.FC = () => {
               <div className="flex flex-col sm:flex-row justify-between mt-2">
                 <div>
                   <p className="text-sm font-medium">Velocidad de lectura:</p>
-                  <p className="text-2xl font-bold">{result.wpm} WPM</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Nivel de grado:</p>
-                  <p className="text-2xl font-bold">{result.grade}</p>
+                  <p className="text-2xl font-bold">{result.wpm} PPM</p>
                 </div>
               </div>
             </div>
