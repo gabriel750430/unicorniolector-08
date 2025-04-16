@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,16 +53,14 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Kid-friendly colors
+				'kid-purple': '#9b87f5',
+				'kid-pink': '#FFDEE2',
+				'kid-blue': '#D3E4FD',
 			},
 			fontFamily: {
-        'sans': ['Comic Neue', 'sans-serif'],
-      },
-      colors: {
-        // Añadimos colores más infantiles
-        'kid-purple': '#9b87f5',
-        'kid-pink': '#FFDEE2',
-        'kid-blue': '#D3E4FD',
-      },
+				'sans': ['Comic Neue', 'sans-serif'],
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
