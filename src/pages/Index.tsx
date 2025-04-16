@@ -37,7 +37,7 @@ const Index = () => {
         <ReadingRecords records={records} />
         
         <footer className="text-center text-sm text-gray-500 mt-8">
-          © 2025 Lectorcitos - Herramienta de evaluación de lectura para estudiantes de primaria
+          © 2025 Lectorcitos
         </footer>
       </div>
     </div>
