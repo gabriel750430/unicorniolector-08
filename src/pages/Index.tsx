@@ -11,26 +11,35 @@ const Index = () => {
   const [currentWpm, setCurrentWpm] = useState<number | null>(null);
   const [showGradeChart, setShowGradeChart] = useState<boolean>(false);
 
-  // Load records on component mount
   useEffect(() => {
     const storedRecords = getReadingRecords();
     setRecords(storedRecords);
     
-    // Set current WPM to the most recent record if it exists
     if (storedRecords.length > 0) {
       setCurrentWpm(storedRecords[storedRecords.length - 1].wpm);
     }
   }, []);
 
   return (
-    <div className="container py-8 px-4 md:px-8 mx-auto">
-      <ReadingAssessment />
-      <GradeChart currentWpm={currentWpm} visible={showGradeChart} />
-      <ReadingRecords records={records} />
-      
-      <footer className="mt-12 text-center text-sm text-muted-foreground">
-        <p>© 2025 Lectura Rápida MX - Herramienta de evaluación de lectura para estudiantes de primaria</p>
-      </footer>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-kid-blue/20 p-4">
+      <div className="w-full max-w-4xl space-y-6">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-kid-purple drop-shadow-lg">
+            Lectura Rápida MX 🚀
+          </h1>
+          <p className="text-xl text-gray-600 mt-2">
+            Divertida herramienta de lectura para estudiantes de primaria
+          </p>
+        </div>
+
+        <ReadingAssessment />
+        <GradeChart currentWpm={currentWpm} visible={showGradeChart} />
+        <ReadingRecords records={records} />
+        
+        <footer className="text-center text-sm text-gray-500 mt-8">
+          © 2025 Lectura Rápida MX - Herramienta de evaluación de lectura para estudiantes de primaria
+        </footer>
+      </div>
     </div>
   );
 };
