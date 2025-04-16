@@ -25,7 +25,7 @@ const Index = () => {
       <div className="w-full max-w-4xl space-y-6">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-kid-purple drop-shadow-lg">
-            Lectura Rápida MX 🚀
+            Lectorcitos 🚀
           </h1>
           <p className="text-xl text-gray-600 mt-2">
             Divertida herramienta de lectura para estudiantes de primaria
@@ -37,7 +37,7 @@ const Index = () => {
         <ReadingRecords records={records} />
         
         <footer className="text-center text-sm text-gray-500 mt-8">
-          © 2025 Lectura Rápida MX - Herramienta de evaluación de lectura para estudiantes de primaria
+          © 2025 Lectorcitos - Herramienta de evaluación de lectura para estudiantes de primaria
         </footer>
       </div>
     </div>
