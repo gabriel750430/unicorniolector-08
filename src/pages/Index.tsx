@@ -30,6 +30,9 @@ const Index = () => {
           <p className="text-xl text-gray-600 mt-2">
             Divertida herramienta de lectura para estudiantes de primaria
           </p>
+          <p className="text-lg text-gray-700 mt-2 font-semibold">
+            ¡Pon a prueba tu habilidad para leer! ¡¡Es un Reto!!
+          </p>
         </div>
 
         <ReadingAssessment />
