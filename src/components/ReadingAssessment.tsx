@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -43,20 +42,17 @@ const ReadingAssessment: React.FC = () => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Load records on component mount
   useEffect(() => {
     const storedRecords = getReadingRecords();
     setRecords(storedRecords);
   }, []);
 
-  // Handle timer countdown
   useEffect(() => {
     if (timerActive && timeLeft > 0) {
       timerRef.current = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
       }, 1000);
     } else if (timerActive && timeLeft === 0) {
-      // Time's up, stop recording
       handleStopRecording();
     }
 
@@ -67,9 +63,7 @@ const ReadingAssessment: React.FC = () => {
     };
   }, [timerActive, timeLeft]);
 
-  // Handle starting the recording
   const handleStartRecording = () => {
-    // Validate inputs
     if (!studentName.trim()) {
       toast({
         title: "Nombre Requerido",
@@ -88,13 +82,10 @@ const ReadingAssessment: React.FC = () => {
       return;
     }
 
-    // Clear previous results
     setResult(null);
     
-    // Reset timer
     setTimeLeft(60);
     
-    // Check if speech recognition is supported
     if (!speechRecognition.isSupported()) {
       toast({
         title: "No Compatible",
@@ -104,7 +95,6 @@ const ReadingAssessment: React.FC = () => {
       return;
     }
 
-    // Start recording
     const success = speechRecognition.start((text) => {
       setTranscription(text);
     });
@@ -126,26 +116,21 @@ const ReadingAssessment: React.FC = () => {
     }
   };
 
-  // Handle stopping the recording
   const handleStopRecording = () => {
     if (!isRecording) return;
 
-    // Stop the timer
     setTimerActive(false);
     
     const { text, elapsedTime } = speechRecognition.stop();
     setIsRecording(false);
     
-    // Calculate words per minute
     const wpm = speechRecognition.calculateWPM(text, elapsedTime);
     const grade = determineGrade(wpm);
     const performance = evaluatePerformance(wpm, schoolGrade);
     
-    // Set the result
     setResult({ wpm, grade, performance });
   };
 
-  // Handle saving the record
   const handleSaveRecord = () => {
     if (!result) {
       toast({
@@ -156,7 +141,6 @@ const ReadingAssessment: React.FC = () => {
       return;
     }
 
-    // Create new record
     const now = new Date();
     const record: ReadingRecord = {
       id: Date.now().toString(),
@@ -170,10 +154,8 @@ const ReadingAssessment: React.FC = () => {
       performance: result.performance
     };
     
-    // Save the record
     saveReadingRecord(record);
     
-    // Update local state
     const updatedRecords = getReadingRecords();
     setRecords(updatedRecords);
     
@@ -183,7 +165,6 @@ const ReadingAssessment: React.FC = () => {
     });
   };
 
-  // Handle restarting the reading
   const handleRestartReading = () => {
     setTranscription("");
     setResult(null);
@@ -191,7 +172,6 @@ const ReadingAssessment: React.FC = () => {
     setTimerActive(false);
   };
 
-  // Handle exporting to Excel
   const handleExportToExcel = () => {
     if (records.length === 0) {
       toast({
@@ -209,7 +189,6 @@ const ReadingAssessment: React.FC = () => {
     });
   };
 
-  // Handle resetting the database
   const handleResetDatabase = () => {
     clearReadingRecords();
     setRecords([]);
@@ -219,19 +198,12 @@ const ReadingAssessment: React.FC = () => {
     });
   };
 
-  // Calculate progress percentage for the timer
   const progressPercentage = (timeLeft / 60) * 100;
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
       <Card className="w-full max-w-3xl p-6 shadow-lg">
         <div className="space-y-4">
-          <h1 className="text-2xl md:text-3xl font-bold text-center">Lectura Rápida MX</h1>
-          <p className="text-center text-muted-foreground">
-            Herramienta de evaluación de lectura para estudiantes de primaria
-          </p>
-          
-          {/* Student Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="student-name">Nombre del Alumno</Label>
@@ -271,7 +243,6 @@ const ReadingAssessment: React.FC = () => {
             </div>
           </div>
           
-          {/* Timer Display */}
           {(isRecording || timeLeft < 60) && (
             <div className="mb-4">
               <div className="flex justify-between items-center mb-2">
@@ -281,7 +252,6 @@ const ReadingAssessment: React.FC = () => {
             </div>
           )}
           
-          {/* Recording Controls */}
           <div className="flex flex-col sm:flex-row justify-center gap-4 mt-6">
             {!isRecording ? (
               <Button 
@@ -316,7 +286,6 @@ const ReadingAssessment: React.FC = () => {
             </Button>
           </div>
           
-          {/* Transcription Area */}
           <div className="mt-6">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-lg font-medium">Texto Transcrito</h2>
@@ -336,7 +305,6 @@ const ReadingAssessment: React.FC = () => {
             />
           </div>
           
-          {/* Result Display */}
           {result && (
             <div className="mt-4 p-4 bg-muted rounded-md">
               <h3 className="text-lg font-medium">Resultado</h3>
@@ -353,7 +321,6 @@ const ReadingAssessment: React.FC = () => {
             </div>
           )}
           
-          {/* Save Button */}
           {result && (
             <div className="flex justify-center mt-4">
               <Button 
@@ -367,7 +334,6 @@ const ReadingAssessment: React.FC = () => {
             </div>
           )}
           
-          {/* Database Controls */}
           <div className="flex flex-col sm:flex-row justify-center gap-4 mt-6">
             <Button 
               variant="outline" 
@@ -405,7 +371,6 @@ const ReadingAssessment: React.FC = () => {
             </AlertDialog>
           </div>
           
-          {/* Records Count */}
           <div className="text-center mt-4 text-sm text-muted-foreground">
             {records.length > 0 ? (
               <p>Registros guardados: {records.length} de 40</p>
