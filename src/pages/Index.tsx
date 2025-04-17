@@ -39,11 +39,11 @@ const Index = () => {
           <div className="flex items-center justify-center gap-4">
             <img 
               src="/lovable-uploads/86393407-127a-45dc-b56c-8e88e228f8bd.png" 
-              alt="Lectorcitos Logo" 
+              alt="UnicornioLector Logo" 
               className="w-16 h-16 object-contain"
             />
             <h1 className="text-4xl font-bold text-kid-purple drop-shadow-lg">
-              Lectorcitos 🚀
+              UnicornioLector 🦄
             </h1>
           </div>
           <p className="text-xl text-gray-600 mt-2">
@@ -58,7 +58,7 @@ const Index = () => {
         <GradeChart currentWpm={currentWpm} visible={showGradeChart} />
         
         <footer className="text-center text-sm text-gray-500 mt-8">
-          © 2025 Lectorcitos
+          © 2025 UnicornioLector
         </footer>
       </div>
     </div>
