@@ -1,31 +1,25 @@
 
 import React, { useState, useEffect } from "react";
 import ReadingAssessment from "@/components/ReadingAssessment";
-import ReadingRecords from "@/components/ReadingRecords";
 import GradeChart from "@/components/GradeChart";
 import { getReadingRecords } from "@/utils/storage";
 import { ReadingRecord } from "@/types";
 
 const Index = () => {
-  const [records, setRecords] = useState<ReadingRecord[]>([]);
   const [currentWpm, setCurrentWpm] = useState<number | null>(null);
   const [showGradeChart, setShowGradeChart] = useState<boolean>(false);
 
   useEffect(() => {
     const storedRecords = getReadingRecords();
-    setRecords(storedRecords);
-    
     if (storedRecords.length > 0) {
       setCurrentWpm(storedRecords[storedRecords.length - 1].wpm);
     }
   }, []);
 
-  // Listen for storage changes to update records when they change
+  // Listen for storage changes to update current WPM when records change
   useEffect(() => {
     const handleStorageChange = () => {
       const updatedRecords = getReadingRecords();
-      setRecords(updatedRecords);
-      
       if (updatedRecords.length > 0) {
         setCurrentWpm(updatedRecords[updatedRecords.length - 1].wpm);
       }
@@ -62,7 +56,6 @@ const Index = () => {
 
         <ReadingAssessment />
         <GradeChart currentWpm={currentWpm} visible={showGradeChart} />
-        <ReadingRecords records={records} />
         
         <footer className="text-center text-sm text-gray-500 mt-8">
           © 2025 Lectorcitos
