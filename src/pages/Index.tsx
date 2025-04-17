@@ -20,6 +20,24 @@ const Index = () => {
     }
   }, []);
 
+  // Listen for storage changes to update records when they change
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const updatedRecords = getReadingRecords();
+      setRecords(updatedRecords);
+      
+      if (updatedRecords.length > 0) {
+        setCurrentWpm(updatedRecords[updatedRecords.length - 1].wpm);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-kid-blue/20 p-4">
       <div className="w-full max-w-4xl space-y-6">

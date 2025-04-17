@@ -26,6 +26,7 @@ export const saveReadingRecord = (record: ReadingRecord): void => {
     
     records.push(record);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    console.log("Record saved successfully:", record);
   } catch (error) {
     console.error("Error saving reading record:", error);
   }
