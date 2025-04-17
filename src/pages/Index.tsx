@@ -24,9 +24,16 @@ const Index = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-kid-blue/20 p-4">
       <div className="w-full max-w-4xl space-y-6">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-kid-purple drop-shadow-lg">
-            Lectorcitos 🚀
-          </h1>
+          <div className="flex items-center justify-center gap-4">
+            <img 
+              src="/lovable-uploads/86393407-127a-45dc-b56c-8e88e228f8bd.png" 
+              alt="Lectorcitos Logo" 
+              className="w-16 h-16 object-contain"
+            />
+            <h1 className="text-4xl font-bold text-kid-purple drop-shadow-lg">
+              Lectorcitos 🚀
+            </h1>
+          </div>
           <p className="text-xl text-gray-600 mt-2">
             Divertida herramienta de lectura para estudiantes de primaria
           </p>
