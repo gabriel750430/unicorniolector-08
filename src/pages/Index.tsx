@@ -1,9 +1,11 @@
 
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import ReadingAssessment from "@/components/ReadingAssessment";
 import GradeChart from "@/components/GradeChart";
 import { getReadingRecords } from "@/utils/storage";
-import { ReadingRecord } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Info } from "lucide-react";
 
 const Index = () => {
   const [currentWpm, setCurrentWpm] = useState<number | null>(null);
@@ -56,6 +58,15 @@ const Index = () => {
 
         <ReadingAssessment />
         <GradeChart currentWpm={currentWpm} visible={showGradeChart} />
+        
+        <div className="flex justify-center mt-8">
+          <Link to="/about">
+            <Button variant="outline" className="flex items-center gap-2">
+              <Info className="h-4 w-4" />
+              Acerca de UnicornioLector
+            </Button>
+          </Link>
+        </div>
         
         <footer className="text-center text-sm text-gray-500 mt-8">
           © 2025 UnicornioLector
