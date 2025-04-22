@@ -5,9 +5,18 @@ const config: CapacitorConfig = {
   appId: 'com.unicornio.lector',
   appName: 'Unicornio Lector',
   webDir: 'dist',
+  server: {
+    androidScheme: 'https',
+    cleartext: true
+  },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 3000
+      launchShowDuration: 3000,
+      backgroundColor: '#a78bfa',
+      showSpinner: true,
+      androidSpinnerStyle: 'large',
+      splashFullScreen: true,
+      splashImmersive: true
     }
   },
   android: {
@@ -15,7 +24,10 @@ const config: CapacitorConfig = {
       minSdkVersion: 22,
       targetSdkVersion: 33,
       versionCode: 1,
-      versionName: "1.0.0"
+      versionName: "1.0.0",
+      keystoreAlias: "unicorniolector",
+      keystorePassword: "unicorniolector",
+      packageName: "com.unicornio.lector"
     }
   }
 };
