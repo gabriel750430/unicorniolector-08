@@ -16,6 +16,16 @@ const Index = () => {
     if (storedRecords.length > 0) {
       setCurrentWpm(storedRecords[storedRecords.length - 1].wpm);
     }
+    
+    // Mejor manejo para eventos de visibilidad en Android
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        const updatedRecords = getReadingRecords();
+        if (updatedRecords.length > 0) {
+          setCurrentWpm(updatedRecords[updatedRecords.length - 1].wpm);
+        }
+      }
+    });
   }, []);
 
   // Listen for storage changes to update current WPM when records change
@@ -33,6 +43,11 @@ const Index = () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
+
+  // Función para mostrar/ocultar el gráfico de calificaciones
+  const toggleGradeChart = () => {
+    setShowGradeChart(prev => !prev);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-kid-blue/20 p-4">
@@ -57,6 +72,17 @@ const Index = () => {
         </div>
 
         <ReadingAssessment />
+        
+        <div className="flex justify-center my-4">
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2"
+            onClick={toggleGradeChart}
+          >
+            {showGradeChart ? "Ocultar gráfico" : "Ver mi progreso"}
+          </Button>
+        </div>
+        
         <GradeChart currentWpm={currentWpm} visible={showGradeChart} />
         
         <div className="flex justify-center mt-8">
@@ -69,7 +95,7 @@ const Index = () => {
         </div>
         
         <footer className="text-center text-sm text-gray-500 mt-8">
-          © 2025 UnicornioLector
+          © 2025 UnicornioLector - Juan Gabriel Estrada Becerra
         </footer>
       </div>
     </div>
