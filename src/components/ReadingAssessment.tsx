@@ -170,6 +170,8 @@ const ReadingAssessment: React.FC = () => {
     setResult(null);
     setTimeLeft(60);
     setTimerActive(false);
+    setStudentName("");
+    setSchoolGrade("");
   };
 
   const handleExportToExcel = () => {
