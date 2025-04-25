@@ -7,7 +7,8 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     androidScheme: 'https',
-    cleartext: true
+    cleartext: true,
+    url: 'https://b7c71a89-bc3f-4f91-a063-782dca0f8ed9.lovableproject.com?forceHideBadge=true'
   },
   plugins: {
     SplashScreen: {
