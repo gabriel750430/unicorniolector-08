@@ -55,9 +55,9 @@ const Index = () => {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-4">
             <img 
-              src="/lovable-uploads/86393407-127a-45dc-b56c-8e88e228f8bd.png" 
+              src="/lovable-uploads/40befe30-f0ee-40e2-a91b-8c01fe2dc45e.png" 
               alt="UnicornioLector Logo" 
-              className="w-16 h-16 object-contain"
+              className="w-24 h-24 object-contain"
             />
             <h1 className="text-4xl font-bold text-kid-purple drop-shadow-lg">
               UnicornioLector 🦄
@@ -103,3 +103,4 @@ const Index = () => {
 };
 
 export default Index;
+
