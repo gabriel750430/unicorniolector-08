@@ -29,6 +29,7 @@ class SpeechRecognitionService {
   private text: string = '';
   private onTextUpdateCallback: ((text: string) => void) | null = null;
   private finalTranscripts: string[] = [];
+  private interimTranscript: string = '';
 
   constructor() {
     // Initialize SpeechRecognition
@@ -60,6 +61,7 @@ class SpeechRecognitionService {
       this.isListening = true;
       this.startTime = Date.now();
       this.text = '';
+      this.interimTranscript = '';
       this.finalTranscripts = [];
       this.onTextUpdateCallback = onTextUpdate;
       this.recognition.start();
@@ -77,29 +79,47 @@ class SpeechRecognitionService {
       this.recognition.stop();
       const elapsedTime = (Date.now() - this.startTime) / 1000; // time in seconds
       
-      // Combine all final transcripts to get the complete text
-      const finalText = this.finalTranscripts.join(' ').trim();
+      // Combine all final transcripts and any remaining interim transcript to get the complete text
+      let finalText = this.finalTranscripts.join(' ').trim();
+      
+      // Include interim transcript in the final text if there's any
+      if (this.interimTranscript) {
+        finalText = finalText ? `${finalText} ${this.interimTranscript}` : this.interimTranscript;
+      }
+      
       return { text: finalText || this.text, elapsedTime };
     }
     return { text: this.text, elapsedTime: 0 };
   }
 
-  // Calculate words per minute
+  // Calculate words per minute - improved word counting
   public calculateWPM(text: string, elapsedTimeInSeconds: number): number {
     if (!text || elapsedTimeInSeconds <= 0) return 0;
     
-    // Count words by splitting on whitespace and filtering out empty strings
-    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+    // Enhanced word counting: 
+    // 1. Normalize spaces
+    // 2. Split on whitespace and filter empty strings
+    // 3. Count non-punctuation items as words
+    const normalizedText = text.trim().replace(/\s+/g, ' ');
+    const words = normalizedText.split(' ').filter(word => word.length > 0);
     const wordCount = words.length;
+    
+    console.log(`Text: "${text}"`);
+    console.log(`Word count: ${wordCount}`);
+    console.log(`Time elapsed: ${elapsedTimeInSeconds} seconds`);
+    
     const minutes = elapsedTimeInSeconds / 60;
     
-    // Return rounded WPM, ensure it's at least 1 if there are words
-    return wordCount > 0 ? Math.max(1, Math.round(wordCount / minutes)) : 0;
+    // Calculate WPM and ensure it's at least 1 if there are words
+    const wpm = wordCount > 0 ? Math.round(wordCount / minutes) : 0;
+    console.log(`WPM calculated: ${wpm}`);
+    
+    return wpm;
   }
 
   // Handle speech recognition results
   private handleResult(event: SpeechRecognitionEvent): void {
-    let interimTranscript = '';
+    this.interimTranscript = '';
     let finalTranscript = '';
 
     for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -109,7 +129,7 @@ class SpeechRecognitionService {
         finalTranscript += transcript + ' ';
         this.finalTranscripts.push(transcript.trim());
       } else {
-        interimTranscript += transcript;
+        this.interimTranscript += transcript;
       }
     }
 
@@ -120,7 +140,8 @@ class SpeechRecognitionService {
     
     // Call the callback with the current text plus any interim results
     if (this.onTextUpdateCallback) {
-      this.onTextUpdateCallback(this.text + ' ' + interimTranscript);
+      const currentText = this.text + (this.interimTranscript ? ' ' + this.interimTranscript : '');
+      this.onTextUpdateCallback(currentText);
     }
   }
 
