@@ -1,4 +1,5 @@
 
+
 // Type definition for the Web Speech API
 interface SpeechRecognitionEvent extends Event {
   resultIndex: number;
@@ -97,31 +98,21 @@ class SpeechRecognitionService {
     if (!text || elapsedTimeInSeconds <= 0) return 0;
     
     // Enhanced word counting: 
-    // 1. Remove extra spaces and replace with single spaces
-    // 2. Trim leading and trailing spaces
-    // 3. Split on whitespace and filter empty strings
-    // 4. Count non-empty items as words
+    // 1. Normalize spaces
+    // 2. Split on whitespace and filter empty strings
+    // 3. Count non-punctuation items as words
     const normalizedText = text.trim().replace(/\s+/g, ' ');
-    
-    // Handle Spanish punctuation and special characters
-    // This will separate words that might be joined with punctuation
-    const cleanedText = normalizedText
-      .replace(/[\.,;:!¡?¿""''()\[\]{}\-_+=*&^%$#@~`|\\/<>]+/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-    
-    const words = cleanedText.split(' ').filter(word => word.length > 0);
+    const words = normalizedText.split(' ').filter(word => word.length > 0);
     const wordCount = words.length;
     
-    console.log(`Original text: "${text}"`);
-    console.log(`Normalized text: "${cleanedText}"`);
-    console.log(`Words identified (${wordCount}):`, words);
+    console.log(`Text: "${text}"`);
+    console.log(`Word count: ${wordCount}`);
     console.log(`Time elapsed: ${elapsedTimeInSeconds} seconds`);
     
     const minutes = elapsedTimeInSeconds / 60;
     
     // Calculate WPM and ensure it's at least 1 if there are words
-    const wpm = wordCount > 0 ? Math.max(1, Math.round(wordCount / minutes)) : 0;
+    const wpm = wordCount > 0 ? Math.round(wordCount / minutes) : 0;
     console.log(`WPM calculated: ${wpm}`);
     
     return wpm;
@@ -191,3 +182,4 @@ class SpeechRecognitionService {
 // Create a singleton instance
 const speechRecognition = new SpeechRecognitionService();
 export default speechRecognition;
+

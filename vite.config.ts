@@ -1,4 +1,5 @@
 
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -10,21 +11,13 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     strictPort: true,
+    // Allow all hosts
     cors: true,
-    hmr: {
-      // Allow all hosts for HMR
-      host: 'localhost',
-      clientPort: 8080,
-    },
-    // This is the key fix - explicitly allow all hosts
-    fs: {
-      strict: false,
-      allow: ['.']
-    },
   },
   preview: {
     port: 8080,
     strictPort: true,
+    // Allow all hosts
     cors: true,
   },
   plugins: [
@@ -37,3 +30,4 @@ export default defineConfig(({ mode }) => ({
     },
   },
 }));
+
