@@ -10,13 +10,21 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     strictPort: true,
-    // Allow all hosts
     cors: true,
+    hmr: {
+      // Allow all hosts for HMR
+      host: 'localhost',
+      clientPort: 8080,
+    },
+    // This is the key fix - explicitly allow all hosts
+    fs: {
+      strict: false,
+      allow: ['.']
+    },
   },
   preview: {
     port: 8080,
     strictPort: true,
-    // Allow all hosts
     cors: true,
   },
   plugins: [
