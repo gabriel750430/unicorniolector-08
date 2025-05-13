@@ -29,7 +29,11 @@ import { getReadingRecords, saveReadingRecord, clearReadingRecords } from "@/uti
 import { exportToExcel } from "@/utils/excelExport";
 import speechRecognition from "@/utils/speechRecognition";
 
-const ReadingAssessment: React.FC = () => {
+interface ReadingAssessmentProps {
+  onSaveRecord?: (wpm: number) => void;
+}
+
+const ReadingAssessment: React.FC<ReadingAssessmentProps> = ({ onSaveRecord }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [transcription, setTranscription] = useState("");
   const [records, setRecords] = useState<ReadingRecord[]>([]);
@@ -158,6 +162,11 @@ const ReadingAssessment: React.FC = () => {
     
     const updatedRecords = getReadingRecords();
     setRecords(updatedRecords);
+    
+    // Call the callback if provided
+    if (onSaveRecord) {
+      onSaveRecord(result.wpm);
+    }
     
     toast({
       title: "Registro Guardado",

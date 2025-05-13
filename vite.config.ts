@@ -9,6 +9,15 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    strictPort: true,
+    // Allow all hosts
+    cors: true,
+  },
+  preview: {
+    port: 8080,
+    strictPort: true,
+    // Allow all hosts
+    cors: true,
   },
   plugins: [
     react(),
